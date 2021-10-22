@@ -1,4 +1,0 @@
-Ante    Antic   64
-Ivo     Ivic    57
-Mate    Matic   46
-Jure    Juric   69
