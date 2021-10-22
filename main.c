@@ -1,81 +1,143 @@
 #include "stdio.h"
 #include "stdlib.h"
-#define MAX_BR_BODOVA (80)
-#define MAX_CHAR (1024)
+#include "string.h"
+#define MAX (40)
 
-typedef struct{
-    char ime[30];
-    char prezime[30];
-    int bodovi;
-}student;
+struct _Student;
+typedef struct _Student *Pozicija;
+typedef struct _Student{
+    char ime[MAX];
+    char prezime[MAX];
+    int godinaRodenja;
+    Pozicija next;
+}Student;
 
-int brojStudenata(char *dat){
-    FILE *fp = NULL;
-    fp = fopen(dat, "r");
-    int brRedova = 0;
-    char buffer[MAX_CHAR] = { 0 };
+int UnesiNaPocetak(Pozicija P, char *ime, char *prezime, int godinaRodenja);
+int UnesiNaKraj(Pozicija P, char *ime, char *prezime, int godinaRodenja);
+int IspisiListu(Pozicija P);
+int IspisiStudenta(Pozicija P);
+int PretraziPoPrezimenu(Pozicija P, char *prezime);
+Student* UnesiPodatke(char *ime, char *prezime, int godinaRodenja);
+Student* TraziPrethodnog(Pozicija P, char *prezime);
+int InsertNakon(Pozicija P, Pozicija noviStudent);
+int IzbrisiStudenta(Pozicija P, char* prezime);
 
-    if(!fp){
-        printf("pogreska u otvaranju datoteke\n");
-        free(fp);
+int main()
+{
+    Student Head = {.ime = " ", .prezime = " ", .godinaRodenja= 0, .next = NULL};
+    Pozicija P = &Head;
+    Pozicija Stud;
+    UnesiNaPocetak(P,"toni", "grbic", 2001);
+    UnesiNaPocetak(P,"mate", "matic", 2000);
+    UnesiNaKraj(P,"ivo", "ivic", 2002);
+
+    IspisiListu(P->next);
+    PretraziPoPrezimenu(P, "matic");
+    
+    IzbrisiStudenta(P, "grbic");
+    IspisiListu(P->next);
+    IzbrisiStudenta(P, "matic");
+    IspisiListu(P->next);
+    //provjera za brisanje kada student nije u listi
+    IzbrisiStudenta(P, "antic");
+    IspisiListu(P->next);
+    //brisanje zadnjeg elementa
+    IzbrisiStudenta(P, "ivic");
+    IspisiListu(P->next);
+    return 0;
+}
+
+int UnesiNaPocetak(Pozicija P, char *ime, char *prezime, int godinaRodenja)
+{
+     Pozicija noviStud = NULL;
+     noviStud = UnesiPodatke(ime, prezime, godinaRodenja);
+    if(!noviStud){
         return -1;
     }
-    while(!feof(fp)){
-        fgets(buffer, MAX_CHAR, fp);
-        brRedova++;
-    }
-    fclose(fp);
-    return brRedova;
+     InsertNakon(P, noviStud);
+     return 0;
 }
 
-student* UnesiStudenteIzDat(int brRed, char *dat){
-    FILE *fp = NULL;
-    fp = fopen(dat, "r");
-    student* poljeStudenata;
-    int i=0;
-    
-    if(!fp){
-        printf("pogreska u otvaranju datoteke\n");
-        free(fp);
-        return NULL;
+int UnesiNaKraj(Pozicija P, char *ime, char *prezime, int godinaRodenja)
+{
+    while(P->next!=NULL){
+        P= P->next;
     }
-    poljeStudenata = (student*)malloc(sizeof(student)*brRed);
-
-    if(!poljeStudenata){
-        printf("pogreska u alokaciji memorije\n");
-        return NULL;
-    }
-
-    while(!feof(fp)){
-        fscanf(fp,"%s", poljeStudenata[i].ime);
-        fscanf(fp,"%s", poljeStudenata[i].prezime);
-        fscanf(fp,"%d", &poljeStudenata[i].bodovi);
-        i++;
-    }
-    fclose(fp);
-    return poljeStudenata;
+    UnesiNaPocetak(P, ime, prezime, godinaRodenja);
+    return 0;
 }
 
-int main(){
-    student *poljeStudenata;
-    int brRedova = 0, i;
-    float relativniBodovi = 0.0;
+int IspisiListu(Pozicija P)
+{   Pozicija temp = P;
+    while(temp != NULL){
+        printf("ime: %s, prezime: %s, "
+        "godinaRodenja: %d\n", temp->ime, temp->prezime, temp->godinaRodenja);
+        temp = temp->next;
+    }
+    printf("\n");
+    return 0;
+}
 
-    brRedova = brojStudenata("studenti.txt");
-    poljeStudenata = UnesiStudenteIzDat(brRedova, "studenti.txt");
+int InsertNakon(Pozicija P, Pozicija noviStudent)
+{
+    noviStudent->next = P->next;
+    P->next = noviStudent;
+    return 0;
+}
 
-    if(!poljeStudenata){
+int IzbrisiStudenta(Pozicija P, char* prezime)
+{
+    Pozicija temp;
+    P = TraziPrethodnog(P, prezime);
+    if(!P){
+        printf("u listi nepostoji student %s, brisanje neuspjesno\n", prezime);
         return 1;
     }
-    
-    printf("IME\tPREZIME\tA_BODOVI R_BODOVI\n");
-    for(i=0; i<brRedova; i++){
-        relativniBodovi = ((float)poljeStudenata[i].bodovi)/MAX_BR_BODOVA * 100.00;
-
-        printf("%s\t%s\t%d\t %.2f\n", 
-                poljeStudenata[i].ime, poljeStudenata[i].prezime, 
-                poljeStudenata[i].bodovi, relativniBodovi);
-    }
-    free(poljeStudenata);
+    temp = P->next;
+    P->next = P->next->next;
+    free(temp);
     return 0;
+}
+
+Student* UnesiPodatke(char *ime, char *prezime, int godinaRodenja)
+{
+     Pozicija temp = NULL;
+     temp = (Pozicija)malloc(sizeof(Student));
+    if(!temp){
+        perror("pogreska u alokaciji memorije\n");
+        return NULL;
+    }
+     strcpy(temp->ime, ime);
+     strcpy(temp->prezime, prezime);
+     temp->godinaRodenja = godinaRodenja;
+     temp->next = NULL;
+     return temp;
+}
+
+Student* TraziPrethodnog(Pozicija P, char *prezime)
+{
+    while(P->next!=NULL){
+        if(strcmp(P->next->prezime, prezime) == 0){
+            break;
+        }
+        P = P->next;
+    }
+    if(P->next == NULL){
+        return NULL;
+    }else{
+        return P;
+    }
+}
+
+int PretraziPoPrezimenu(Pozicija P, char *prezime)
+{
+    while(P!=NULL){
+        if(strcmp(P->prezime, prezime) == 0){
+            printf("student %s postoji\n", prezime);
+            return 0; 
+        }
+        P = P->next;
+    }
+    printf("student %s nepostoji\n", prezime);
+    return 1;
 }
