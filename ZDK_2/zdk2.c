@@ -15,7 +15,6 @@ typedef struct _Student{
 int UnesiNaPocetak(Pozicija P, char *ime, char *prezime, int godinaRodenja);
 int UnesiNaKraj(Pozicija P, char *ime, char *prezime, int godinaRodenja);
 int IspisiListu(Pozicija P);
-int IspisiStudenta(Pozicija P);
 int PretraziPoPrezimenu(Pozicija P, char *prezime);
 Student* UnesiPodatke(char *ime, char *prezime, int godinaRodenja);
 Student* TraziPrethodnog(Pozicija P, char *prezime);
@@ -26,7 +25,7 @@ int main()
 {
     Student Head = {.ime = " ", .prezime = " ", .godinaRodenja= 0, .next = NULL};
     Pozicija P = &Head;
-    Pozicija Stud;
+
     UnesiNaPocetak(P,"toni", "grbic", 2001);
     UnesiNaPocetak(P,"mate", "matic", 2000);
     UnesiNaKraj(P,"ivo", "ivic", 2002);
@@ -68,7 +67,12 @@ int UnesiNaKraj(Pozicija P, char *ime, char *prezime, int godinaRodenja)
 }
 
 int IspisiListu(Pozicija P)
-{   Pozicija temp = P;
+{
+    if(P == NULL){
+        printf("Lista je prazna\n");
+        return 0;
+    }
+   Pozicija temp = P;
     while(temp != NULL){
         printf("ime: %s, prezime: %s, "
         "godinaRodenja: %d\n", temp->ime, temp->prezime, temp->godinaRodenja);
