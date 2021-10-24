@@ -32,6 +32,7 @@ int main()
 
     IspisiListu(P->next);
     PretraziPoPrezimenu(P, "matic");
+    PretraziPoPrezimenu(P, "senta");
     
     IzbrisiStudenta(P, "grbic");
     IspisiListu(P->next);
@@ -122,26 +123,36 @@ Student* TraziPrethodnog(Pozicija P, char *prezime)
 {
     while(P->next!=NULL){
         if(strcmp(P->next->prezime, prezime) == 0){
-            break;
+            return P;
         }
         P = P->next;
     }
-    if(P->next == NULL){
+    if(P->next == NULL)
         return NULL;
-    }else{
-        return P;
+    
+}
+
+Student* TraziTrenutnog(Pozicija P, char *prezime)
+{
+    while(P->next!=NULL){
+        if(strcmp(P->prezime, prezime) == 0){
+            return P; 
+        }
+        P = P->next;
     }
+    if(P->next == NULL)
+        return NULL;
 }
 
 int PretraziPoPrezimenu(Pozicija P, char *prezime)
 {
-    while(P!=NULL){
-        if(strcmp(P->prezime, prezime) == 0){
-            printf("student %s postoji\n", prezime);
-            return 0; 
-        }
-        P = P->next;
+    Pozicija Stud = NULL;
+    Stud = TraziTrenutnog(P, prezime);
+    if(!Stud){
+        printf("student %s nepostoji\n", prezime);
+    }else{
+        printf("student %s postoji\n", Stud->prezime);
     }
-    printf("student %s nepostoji\n", prezime);
-    return 1;
+    
+    return 0;
 }
