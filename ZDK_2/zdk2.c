@@ -18,6 +18,7 @@ int IspisiListu(Pozicija P);
 int PretraziPoPrezimenu(Pozicija P, char *prezime);
 Student* UnesiPodatke(char *ime, char *prezime, int godinaRodenja);
 Student* TraziPrethodnog(Pozicija P, char *prezime);
+Student* TraziTrenutnog(Pozicija P, char *prezime);
 int InsertNakon(Pozicija P, Pozicija noviStudent);
 int IzbrisiStudenta(Pozicija P, char* prezime);
 
@@ -129,7 +130,6 @@ Student* TraziPrethodnog(Pozicija P, char *prezime)
     }
     if(P->next == NULL)
         return NULL;
-    
 }
 
 Student* TraziTrenutnog(Pozicija P, char *prezime)
