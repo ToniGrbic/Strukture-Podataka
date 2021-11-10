@@ -36,38 +36,117 @@ int main()
     Pozicija P = &Head;
     Student Head2 = {.ime = " ", .prezime = " ", .godinaRodenja= 0, .next = NULL};
     Pozicija Q = &Head2;
-    /*UnesiNaPocetak(P,"toni", "grbic", 2001);
-    UnesiNaPocetak(P,"mate", "matic", 2000);
-    UnesiNaKraj(P,"ivo", "ivic", 2002);
-    UnesiNakonStud(P, "ante", "baric", 1999, "matic");
-    UnesiPrijeStud(P, "mijo", "mijic", 1999, "matic");
-    IspisiListu(P->next);*/
 
-    UnesiSortirano(P, "ivo", "zdeslav", 2001);
-    UnesiSortirano(P, "toni", "grbic", 2001);
-    UnesiSortirano(P, "ana", "anjic", 1999);
-    UnesiSortirano(P, "ante", "baric", 2002);
-    UnesiSortirano(P, "mate", "matic", 2000);
-    IspisiListu(P->next);
-    UnesiListuUDatoteku(P->next, "osobeUnos.txt");
-    
-    //PretraziPoPrezimenu(P, "matic");
-    //PretraziPoPrezimenu(P, "senta");
-    /*IzbrisiStudenta(P, "grbic");
-    IspisiListu(P->next);
-    IzbrisiStudenta(P, "matic");
-    IspisiListu(P->next);
-    //provjera za brisanje kada student nije u listi
-    IzbrisiStudenta(P, "antic");
-    IspisiListu(P->next);
-    //brisanje zadnjeg elementa
-    IzbrisiStudenta(P, "ivic");
-    IspisiListu(P->next);*/
-    UcitajListuIzDatoteke(Q, "osobe.txt");
-    IspisiListu(Q->next);
-    IzbrisiListu(Q);
-    IspisiListu(Q->next);
-    
+    int odabir;
+    char ime[MAX];
+    char prezime[MAX], prezimePrije[MAX], prezimeNakon[MAX], pretraziPrezime[MAX], izbrisiStudenta[MAX];
+    int godinaRodenja;
+    char znak;
+
+    do{
+        printf("MENI ZA VEZANU LISTU:\n"
+            	"0.Izlaz\n"
+                "1.UnesiSortirano\n"
+                "2.UnesiNaPocetak\n"
+                "3.UnesiNaKraj\n"
+                "4.UnesiNakonStud\n"
+                "5.UnesiPrijeStud\n"
+                "6.UnesiListuUDatoteku\n"
+                "7.UcitajListuIzDatoteke\n"
+                "8.IspisiListu\n"
+                "9.PretraziPoPrezimenu\n"
+                "10.IzbrisiStudeta\n");
+        printf("\n");
+
+        printf("Unesite opciju 0 do 10: ");
+        do{
+            scanf("%d", &odabir);
+            if(odabir < 0 || odabir > 10)
+                printf("krivi unos, pokusajte ponovo...\n");
+            
+        }while( odabir < 0 || odabir > 10);
+        
+        if(odabir != 0 && odabir < 6){
+            printf("Unos podataka za studenta:\n");
+            printf("Ime: ");
+            scanf("%s", ime);
+            printf("Prezime: ");
+            scanf("%s", prezime);
+            printf("GodinaRodenja: ");
+            scanf("%d", &godinaRodenja); 
+        }
+        
+        switch(odabir){
+            case 0:
+                 printf("Izlaz...\n");
+                 break;
+            case 1: 
+                UnesiSortirano(P, ime, prezime, godinaRodenja);
+                break;
+            case 2:
+                UnesiNaPocetak(P, ime, prezime, godinaRodenja);
+                break;
+            case 3:
+                UnesiNaKraj(P, ime, prezime, godinaRodenja);
+                break;
+            case 4:
+                printf("Unesi prezime nakon kojeg ce se unjeti novi element:\n");
+                scanf("%s", prezimePrije);
+                UnesiNakonStud(P, ime, prezime, godinaRodenja, prezimePrije);
+                break;
+            case 5:
+                printf("Unesi prezime prije kojeg ce se unjeti novi element:\n");
+                scanf("%s", prezimeNakon);
+                UnesiPrijeStud(P, ime, prezime, godinaRodenja, prezimeNakon);
+                break;
+            case 6:
+                if(UnesiListuUDatoteku(P, "osobeUnos.txt") == 0){
+                    printf("Lista uspjesno unesena u datoteku!\n");
+                }else{
+                    printf("Neuspjesni unos, greska!\n");
+                }
+                break;
+            case 7:
+                if(UcitajListuIzDatoteke(Q, "osobe.txt") == 0){
+                    printf("Lista uspjesno ucitanja iz datoteke!\n");
+                }else{
+                    printf("Neuspjesno ucitavanje, greska!\n");
+                }
+                break;
+            case 8:
+                printf("Lista P:\n");
+                IspisiListu(P->next);
+                printf("Lista Q:\n");
+                IspisiListu(Q->next);
+                break;
+            case 9:
+                printf("Unesi prezime studenta kojeg zelite pretrazit: ");
+                scanf("%s", pretraziPrezime);
+    	        PretraziPoPrezimenu(P, pretraziPrezime);
+                break;
+            case 10:
+                printf("Unesi prezime studenta kojeg zelite izbrisati: ");
+                scanf("%s", izbrisiStudenta);
+                if(IzbrisiStudenta(P, izbrisiStudenta) == 0){
+                    printf("Student %s uspjesno izbrisan!\n", izbrisiStudenta);
+                }
+                break;
+        }
+        if(odabir != 0){
+            printf("pritisnite neku tipku za nastavak...");
+            getch();
+        }
+        printf("\n");
+        
+    }while(odabir != 0);
+
+    if(P->next != NULL){
+        IzbrisiListu(P);
+    }
+
+    if(Q->next != NULL){
+        IzbrisiListu(Q);
+    }
     return 0;
 }
 
@@ -124,7 +203,7 @@ int UnesiSortirano(Pozicija P, char *ime, char *prezime, int godinaRodenja)
 int IspisiListu(Pozicija P)
 {
     if(P == NULL){
-        printf("Lista je prazna\n");
+        printf("Lista je prazna\n\n");
         return 0;
     }
    Pozicija temp = P;
@@ -247,6 +326,7 @@ int UnesiListuUDatoteku(Pozicija P, char *datoteka)
 int UcitajListuIzDatoteke(Pozicija Q, char *datoteka)
 {
     FILE *fp = NULL;
+    char buffer[MAX_CHAR] = { 0 };
     fp = fopen(datoteka, "r");
    if(!fp){
        printf("otvaranje datoteke neuspjelo\n");
@@ -258,7 +338,6 @@ int UcitajListuIzDatoteke(Pozicija Q, char *datoteka)
     }
     while(!feof(fp)){
         Pozicija Stud = NULL;
-        char buffer[MAX_CHAR] = { 0 };
         Stud = (Pozicija)malloc(sizeof(Student));
         if(!Stud){
             printf("greska u alokaciji memorije\n");
