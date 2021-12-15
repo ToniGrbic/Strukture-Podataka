@@ -140,7 +140,7 @@ StabloPos deleteCvor(StabloPos root, int broj)
 {
 	StabloPos currentCvor = root;
 	StabloPos temp = NULL;
-	if(currentCvor==NULL){
+	if(currentCvor == NULL){
 		return currentCvor;
 	}else if(currentCvor->data > broj){
 		currentCvor->left = deleteCvor(currentCvor->left, broj);
@@ -151,10 +151,16 @@ StabloPos deleteCvor(StabloPos root, int broj)
 	}else{
 		if(currentCvor->left !=NULL && currentCvor->right != NULL)
 		{
+			//nađi najveci u ljevom podstablu
 			temp = currentCvor;
 			temp = getMax(currentCvor->left);
 			currentCvor->data = temp->data;
 			currentCvor->left = deleteCvor(currentCvor->left, temp->data);
+			/* //ili nađi najmanji u desnom podstablu
+			temp = getMin(currentCvor->right);
+			currentCvor->data = temp->data;
+			currentCvor->right = deleteCvor(currentCvor->right, temp->data);
+			*/
 		}else{
 
 		    temp = currentCvor;
@@ -195,9 +201,9 @@ StabloPos getElement(StabloPos root, int broj)
 	if(currentCvor == NULL){
 		return NULL;
 	}else if(currentCvor->data > broj){
-		return getElement(currentCvor->left, broj);
+		 getElement(currentCvor->left, broj);
 	}else if(currentCvor->data < broj){
-		return getElement(currentCvor->right, broj);
+		 getElement(currentCvor->right, broj);
 	}else{
 		return currentCvor;
 	}
