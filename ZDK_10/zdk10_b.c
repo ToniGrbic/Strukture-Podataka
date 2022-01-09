@@ -38,7 +38,7 @@ int PrintAll(StabloPos root);
 int InOrder(StabloPos root);
 StabloPos FindByCountryName(char *drzava, StabloPos root);
 int PrintGradovi(Position head);
-int PrintGradoviSaMinStan(StabloPos root, int minBrStan);
+int PrintGradoviSaMinStan(Position current, int minBrStan);
 
 int main() {
 	char file[MAX] = "";
@@ -48,23 +48,23 @@ int main() {
 	root = ReadFromFiles(file, root);
 	PrintAll(root);
 
-	/*char Input[MAX]= "", drzava[MAX]= "";
+	char Input[MAX]= "", drzava[MAX]= "";
 	int minBrStanovnika;
-	//Position current = NULL;
+	StabloPos current = NULL;
 	do {
 		printf("Upisite drzavu koju zelite pretrazit:\n");
 		InputString(drzava);
-		current = FindByCountryName(drzava, &Head);
+		current = FindByCountryName(drzava, root);
 		if (current != NULL) {
 			printf("Unesite donju granicu broja stanovnika gradova:\n");
 			scanf("%d", &minBrStanovnika); getchar();
 			printf("Gradovi sa vise od %d stanovnika:\n", minBrStanovnika);
-			PrintGradovi(current->root, minBrStanovnika);
+			PrintGradoviSaMinStan(current->head, minBrStanovnika);
 		}
 		printf("za nastavak unesite neku tipku, a za izlaz exit\n");
 		InputString(Input);
 
-	} while (strcmp(Input, "exit") != 0);*/
+	} while (strcmp(Input, "exit") != 0);
 	return 0;
 }
 
@@ -235,9 +235,9 @@ int PrintGradovi(Position head)
 	return 0;
 }
 
-int PrintGradoviSaMinStan(StabloPos node, int minBrStan)
+int PrintGradoviSaMinStan(Position head, int minBrStan)
 {
-	Position current = node->head->next;
+	Position current = head->next;
 	printf(" Grad:                Broj Stanovnika:\n");
 	while (current != NULL) {
 		if (current->brojStanovnika >= minBrStan)
