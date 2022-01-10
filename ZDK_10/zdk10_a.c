@@ -79,6 +79,7 @@ int ReadFromFiles(char *file, Position head)
 {
 	char buffer[MAX], drzava[MAX], gradoviFile[MAX];
 	FILE *fp = NULL;
+	int result = 0;
 	fp = fopen(file, "r");
 	if (fp == NULL)
 	{
@@ -87,8 +88,10 @@ int ReadFromFiles(char *file, Position head)
 	}
 	while (fgets(buffer, MAX, fp) != NULL)
 	{
-		sscanf(buffer, "%s %s", drzava, gradoviFile);
-		InsertToListAndTreeSorted(head, drzava, gradoviFile);
+		result = sscanf(buffer, "%s %s", drzava, gradoviFile);
+		if(result == 2)
+			InsertToListAndTreeSorted(head, drzava, gradoviFile);
+		
 	}
 	fclose(fp);
 	return 0;
@@ -97,11 +100,11 @@ int ReadFromFiles(char *file, Position head)
 int InsertToListAndTreeSorted(Position head, char *drzava, char *gradoviFile)
 {
 	Position current = head;
-	Position newEl = createListEl(drzava);
-	newEl->root = InsertGradoviToTree(gradoviFile, newEl->root);
-
+	Position newEl = NULL;
+	newEl=createListEl(drzava);
 	if (newEl == NULL)
 		return -1;
+	newEl->root = InsertGradoviToTree(gradoviFile, newEl->root);
 
 	while (current->next != NULL && strcmp(current->next->drzava, drzava) < 0)
 		current = current->next;
@@ -156,14 +159,14 @@ StabloPos Insert(StabloPos root, char *grad, int brojSt)
 		StabloPos temp = NULL;
 		temp = createNewCvor(grad, brojSt);
 		return temp;
-
 	}
 	else if (node->brojStanovnika < brojSt) {
 		node->left = Insert(node->left, grad, brojSt);
-
 	}
 	else if (node->brojStanovnika > brojSt) {
 		node->right = Insert(node->right, grad, brojSt);
+	}else{
+		printf("Vec imamo istu drzavu\n");
 	}
 	return root;
 }

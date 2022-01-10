@@ -28,17 +28,17 @@ typedef struct _BinStabloCvor
 
 int InputString(char *file);
 StabloPos ReadFromFiles(char *file, StabloPos root);
-StabloPos Insert(StabloPos root, char *drzava, char *gradoviFile);
-StabloPos createNewCvor(char *drzava, char *gradoviFile);
-int InsertGradoviToList(char *gradoviFile, Position head);
 int InsertToListSorted(Position current, Position newEl, int brStan);
 Position createListEl(char *grad, int brojStanovnika);
 int InsertAfter(Position head, Position newEl);
+int InsertGradoviToList(char *gradoviFile, Position head);
+StabloPos Insert(StabloPos root, char *drzava, char *gradoviFile);
+StabloPos createNewCvor(char *drzava, char *gradoviFile);
 int PrintAll(StabloPos root);
 int InOrder(StabloPos root);
 StabloPos FindByCountryName(char *drzava, StabloPos root);
 int PrintGradovi(Position head);
-int PrintGradoviSaMinStan(Position current, int minBrStan);
+int PrintGradoviSaMinStan(Position head, int minBrStan);
 
 int main() {
 	char file[MAX] = "";
@@ -65,6 +65,7 @@ int main() {
 		InputString(Input);
 
 	} while (strcmp(Input, "exit") != 0);
+	system("pause");
 	return 0;
 }
 
@@ -79,8 +80,12 @@ int InputString(char *str)
 
 StabloPos ReadFromFiles(char *file, StabloPos root)
 {
-	FILE *fp = NULL;
 	
+	FILE *fp = NULL;
+	char buffer[MAX] = { 0 };
+	char drzava[MAX] = { 0 };
+	char gradoviFile[MAX] = { 0 };
+	int result = 0;
 	fp = fopen(file, "r");
 	if (fp == NULL)
 	{
@@ -90,81 +95,14 @@ StabloPos ReadFromFiles(char *file, StabloPos root)
 	
 	while (!feof(fp))
 	{
-		char buffer[MAX] = "";
-		char drzava[MAX] = "", gradoviFile[MAX] = "";
 		fgets(buffer, MAX, fp);
-		sscanf(buffer, "%s %s", drzava, gradoviFile);
-		root = Insert(root, drzava, gradoviFile);
+		result=sscanf(buffer, "%s %s", drzava, gradoviFile);
+		if(result == 2)
+			root = Insert(root, drzava, gradoviFile);
 	}
 	
 	fclose(fp);
 	return root;
-}
-
-StabloPos Insert(StabloPos root, char *drzava, char *gradoviFile)
-{	StabloPos temp = NULL;
-	StabloPos node = root;
-	if (node == NULL) {
-		temp = createNewCvor(drzava, gradoviFile);
-		return temp;
-	}
-	else if (strcmp(node->drzava, drzava) > 0) {
-		node->left = Insert(node->left, drzava, gradoviFile);
-	}
-	else if (strcmp(node->drzava, drzava) < 0) {
-		node->right = Insert(node->right, drzava, gradoviFile);
-	}
-	return root;
-}
-
-StabloPos createNewCvor(char *drzava,char *gradoviFile)
-{
-	VezanaListaEl Head = { .grad = "",.brojStanovnika = 0,.next = NULL };
-	Position head = &Head;
-	StabloPos q = NULL;
-	q = (StabloPos)malloc(sizeof(BinStabloCvor));
-	if (!q) {
-		perror("pogreska u alokaciji memorije\n");
-		return NULL;
-	}
-	strcpy(q->drzava, drzava);
-	q->left = NULL;
-	q->right = NULL;
-	q->head = head;
-	InsertGradoviToList(gradoviFile, q->head);
-	return q;
-}
-
-int InsertGradoviToList(char *gradoviFile, Position head)
-{
-	Position current = head;
-	
-	FILE *fp = NULL;
-	fp = fopen(gradoviFile, "r");
-	if (fp == NULL) {
-		perror("pogreska u otvaranju datoteke");
-		return -1;
-	}
-	
-	while (!feof(fp))
-	{
-		char buffer[MAX] = { 0 }, grad[MAX] = { 0 };
-		int brojSt;
-		fgets(buffer, MAX, fp);
-		sscanf(buffer, "%s %d", grad, &brojSt);
-		Position newEl = NULL;
-		newEl = createListEl(grad, brojSt);
-		InsertToListSorted(current, newEl, brojSt);
-	}
-	fclose(fp);
-	return 0;
-}
-
-int InsertToListSorted(Position current, Position newEl, int brStan) {
-	while (current->next != NULL && current->next->brojStanovnika > brStan)
-		current = current->next;
-	InsertAfter(current, newEl);
-	return 0;
 }
 
 Position createListEl(char *grad, int brojStanovnika)
@@ -187,6 +125,92 @@ int InsertAfter(Position head, Position newEl)
 	newEl->next = head->next;
 	head->next = newEl;
 	return 0;
+}
+
+int InsertGradoviToList(char *gradoviFile, Position head)
+{
+	Position newEl = NULL;
+	Position current = head;
+	char buffer[MAX] = { 0 };
+	char grad[MAX] = { 0 };
+	int brojSt = 0;
+	int result = 0;
+	FILE *fp = NULL;
+	
+	fp = fopen(gradoviFile, "r");
+	if (fp == NULL) {
+		perror("pogreska u otvaranju datoteke");
+		return -1;
+	}
+	
+	while (!feof(fp))
+	{
+		fgets(buffer, MAX, fp);
+		result = sscanf(buffer, "%s %d", grad, &brojSt);
+		if (result == 2) {
+			newEl = createListEl(grad, brojSt);
+			if(!newEl) {
+				fclose(fp);
+				return -2;
+			}
+			InsertToListSorted(current, newEl, brojSt);
+		}
+	}
+	fclose(fp);
+	return 0;
+}
+
+int InsertToListSorted(Position current, Position newEl, int brStan) {
+	while (current->next != NULL && current->next->brojStanovnika > brStan)
+		current = current->next;
+	InsertAfter(current, newEl);
+	return 0;
+}
+
+StabloPos Insert(StabloPos root, char *drzava, char *gradoviFile)
+{	StabloPos temp = NULL;
+	StabloPos node = root;
+	if (node == NULL) {
+		temp = createNewCvor(drzava, gradoviFile);
+		return temp;
+	}
+	else if (strcmp(node->drzava, drzava) > 0) {
+		node->left = Insert(node->left, drzava, gradoviFile);
+	}
+	else if (strcmp(node->drzava, drzava) < 0) {
+		node->right = Insert(node->right, drzava, gradoviFile);
+	}
+	else {
+		printf("imamo istu drzavu");
+	}
+	return root;
+}
+
+StabloPos createNewCvor(char *drzava,char *gradoviFile)
+{
+	StabloPos q = NULL;
+	q = (StabloPos)malloc(sizeof(BinStabloCvor));
+	if (!q) {
+		perror("pogreska u alokaciji memorije\n");
+		return NULL;
+	}
+	strcpy(q->drzava, drzava);
+	q->left = NULL;
+	q->right = NULL;
+	q->head = malloc(sizeof(VezanaListaEl));
+	if (!q->head) {
+		perror("pogreska u alokaciji memorije\n");
+		free(q);
+		return NULL;
+	}
+	else {
+		q->head->next = NULL;
+		q->head->brojStanovnika = 0;
+		strcpy(q->head->grad, "");
+	}
+		
+	InsertGradoviToList(gradoviFile, q->head);
+	return q;
 }
 
 int PrintAll(StabloPos root)
