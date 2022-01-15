@@ -1,5 +1,5 @@
 Split       250000
 Zagreb      850000
-Zadar       150000
+Zadar       200000
 Osjek       200000
 Dubrovnik   50000

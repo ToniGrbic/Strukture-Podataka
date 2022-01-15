@@ -39,25 +39,28 @@ Position FindByCountryName(char *drzava, Position head);
 int PrintGradovi(StabloPos root, int minBrStan);
 
 int main() {
-	char file[MAX] = "";
+	char file[MAX] = { 0 }, Input[MAX]= { 0 }, drzava[MAX]= { 0 };
 	VezanaListaEl Head = { .drzava = "",.next = NULL,.root = NULL };
+	Position current = NULL;
+	int minBrStanovnika;
+	
 	printf("Unesite ime datoteke:");
 	InputString(file);
 	ReadFromFiles(file, &Head);
 	PrintAll(&Head);
 
-	char Input[MAX]= "", drzava[MAX]= "";
-	int minBrStanovnika;
-	Position current = NULL;
 	do {
 		printf("Upisite drzavu koju zelite pretrazit:\n");
 		InputString(drzava);
 		current = FindByCountryName(drzava, &Head);
 		if (current != NULL) {
+			printf("Drzava %s postoji!\n", current->drzava);
 			printf("Unesite donju granicu broja stanovnika gradova:\n");
 			scanf("%d", &minBrStanovnika); getchar();
-			printf("Gradovi sa vise od %d stanovnika:\n", minBrStanovnika);
+			printf("Gradovi sa %d ili vise stanovnika:\n", minBrStanovnika);
 			PrintGradovi(current->root, minBrStanovnika);
+		}else{
+			printf("Drzava %s nepostoji!\n", drzava);
 		}
 		printf("za nastavak unesite neku tipku, a za izlaz exit\n");
 		InputString(Input);
@@ -165,8 +168,15 @@ StabloPos Insert(StabloPos root, char *grad, int brojSt)
 	}
 	else if (node->brojStanovnika > brojSt) {
 		node->right = Insert(node->right, grad, brojSt);
-	}else{
-		printf("Vec imamo istu drzavu\n");
+	}
+	else if(strcmp(node->grad, grad) < 0){
+		node->left = Insert(node->left, grad, brojSt);
+	}
+	else if(strcmp(node->grad, grad) > 0){
+		node->right = Insert(node->right, grad, brojSt);
+	}
+	else{
+		printf("Vec imamo isti grad: %s\n", grad);
 	}
 	return root;
 }

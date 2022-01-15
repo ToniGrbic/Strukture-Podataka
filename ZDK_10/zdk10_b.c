@@ -28,7 +28,7 @@ typedef struct _BinStabloCvor
 
 int InputString(char *file);
 StabloPos ReadFromFiles(char *file, StabloPos root);
-int InsertToListSorted(Position current, Position newEl, int brStan);
+int InsertToListSorted(Position current, Position newEl, int brStan, char *grad);
 Position createListEl(char *grad, int brojStanovnika);
 int InsertAfter(Position head, Position newEl);
 int InsertGradoviToList(char *gradoviFile, Position head);
@@ -41,31 +41,34 @@ int PrintGradovi(Position head);
 int PrintGradoviSaMinStan(Position head, int minBrStan);
 
 int main() {
-	char file[MAX] = "";
+	char file[MAX] = { 0 }, Input[MAX]= { 0 }, drzava[MAX]= { 0 };
 	StabloPos root = NULL;
+	StabloPos current = NULL;
+	int minBrStanovnika;
+
 	printf("Unesite ime datoteke:");
 	InputString(file);
 	root = ReadFromFiles(file, root);
 	PrintAll(root);
 
-	char Input[MAX]= "", drzava[MAX]= "";
-	int minBrStanovnika;
-	StabloPos current = NULL;
 	do {
 		printf("Upisite drzavu koju zelite pretrazit:\n");
 		InputString(drzava);
 		current = FindByCountryName(drzava, root);
 		if (current != NULL) {
+			printf("Drzava %s postoji!\n", current->drzava);
 			printf("Unesite donju granicu broja stanovnika gradova:\n");
 			scanf("%d", &minBrStanovnika); getchar();
-			printf("Gradovi sa vise od %d stanovnika:\n", minBrStanovnika);
+			printf("Gradovi sa %d ili vise stanovnika:\n", minBrStanovnika);
 			PrintGradoviSaMinStan(current->head, minBrStanovnika);
+		}else{
+			printf("Drzava %s nepostoji!\n", drzava);
 		}
 		printf("za nastavak unesite neku tipku, a za izlaz exit\n");
 		InputString(Input);
 
 	} while (strcmp(Input, "exit") != 0);
-	system("pause");
+	
 	return 0;
 }
 
@@ -153,15 +156,17 @@ int InsertGradoviToList(char *gradoviFile, Position head)
 				fclose(fp);
 				return -2;
 			}
-			InsertToListSorted(current, newEl, brojSt);
+			InsertToListSorted(current, newEl, brojSt, grad);
 		}
 	}
 	fclose(fp);
 	return 0;
 }
 
-int InsertToListSorted(Position current, Position newEl, int brStan) {
-	while (current->next != NULL && current->next->brojStanovnika > brStan)
+int InsertToListSorted(Position current, Position newEl, int brStan, char *grad) {
+	while (current->next != NULL && 
+	(current->next->brojStanovnika > brStan || 
+	(current->next->brojStanovnika == brStan  && strcmp(current->next->grad, grad))))
 		current = current->next;
 	InsertAfter(current, newEl);
 	return 0;
@@ -181,7 +186,7 @@ StabloPos Insert(StabloPos root, char *drzava, char *gradoviFile)
 		node->right = Insert(node->right, drzava, gradoviFile);
 	}
 	else {
-		printf("imamo istu drzavu");
+		printf("imamo istu drzavu\n");
 	}
 	return root;
 }
