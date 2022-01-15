@@ -1,0 +1,5 @@
+Koper       26000
+Celje       38000
+Velenje     26000
+Ljubljana   300000
+Ptuj        18000
