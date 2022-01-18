@@ -1,7 +1,7 @@
+#include "zdk11.h"
 #include "stdio.h"
 #include "stdlib.h"
 #include "string.h"
-#include "zdk11.h"
 
 int InputString(char *str)
 {
@@ -132,7 +132,7 @@ StabloPos InsertGradoviToTree(char *gradoviFile, StabloPos root)
 
 StabloPos Insert(StabloPos root, char *grad, int brojSt)
 {
-	/* prvo uspoređuje po br Stanovnika, ako je br isti, usporeduje po nazivu grada*/
+	/* prvo uspoređuje po broj Stanovnika, ako je broj isti, usporeduje po nazivu grada*/
 	StabloPos node = root;
 	if (node == NULL) {
 		StabloPos temp = NULL;
