@@ -1,6 +1,3 @@
-#define _CRT_SECURE_NO_WARNINGS
-#define MAX (256)
-#define MAX_SIZE (40)
 #include "stdio.h"
 #include "stdlib.h"
 #include "string.h"
@@ -34,7 +31,7 @@ int main() {
 		InputString(Input);
 
 	} while (strcmp(Input, "exit") != 0);
-	
+	root = DealocateTree(root);
 	return 0;
 }
 
@@ -242,3 +239,38 @@ int PrintGradoviSaMinStan(Position head, int minBrStan)
 	return 0;
 }
 
+StabloPos DealocateTree(StabloPos node)
+{
+	if (!node) {
+		return NULL;
+	}
+	node->left = DealocateTree(node->left);
+	node->right = DealocateTree(node->right);
+	FreeTreeCvor(node);
+	return NULL;
+}
+
+int FreeTreeCvor(StabloPos node) {
+	if (!node) {
+		return 0;
+	}
+	DealocateList(node->head);
+	free(node);
+	return 0;
+}
+
+int DealocateList(Position current)
+{
+	while(current->next != NULL){
+		DealocateCvor(current);
+	}
+	return 0;
+}
+
+int DealocateCvor(Position current){
+	Position temp = NULL;
+    temp = current->next;
+    current->next = temp->next;
+    free(temp);
+	return 0;
+}

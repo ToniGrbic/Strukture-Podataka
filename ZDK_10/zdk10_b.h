@@ -37,3 +37,8 @@ int InOrder(StabloPos root);
 StabloPos FindByCountryName(char *drzava, StabloPos root);
 int PrintGradovi(Position head);
 int PrintGradoviSaMinStan(Position head, int minBrStan);
+/*dealokacija*/
+int DealocateList(Position current);
+int DealocateCvor(Position current);
+StabloPos DealocateTree(StabloPos node);
+int FreeTreeCvor(StabloPos node);
