@@ -2,6 +2,6 @@ Beograd         13700000
 Kraljevo        67000
 NoviSad         341000
 Subotica        136000
-Krusevac        136000
+Krusevac        105000
 
 

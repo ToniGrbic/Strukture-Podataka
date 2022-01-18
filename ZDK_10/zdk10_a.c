@@ -1,53 +1,19 @@
-#define _CRT_SECURE_NO_WARNINGS
-#define MAX (256)
-#define MAX_SIZE (40)
 #include "stdio.h"
 #include "stdlib.h"
 #include "string.h"
-
-struct _VezanaListaEl;
-struct _BinStabloCvor;
-typedef struct _VezanaListaEl *Position;
-typedef struct _BinStabloCvor *StabloPos;
-
-typedef struct _VezanaListaEl 
-{
-	char drzava[MAX_SIZE];
-	Position next;
-	StabloPos root;
-}VezanaListaEl;
-
-typedef struct _BinStabloCvor
-{
-	int brojStanovnika;
-	char grad[MAX_SIZE];
-	StabloPos left;
-	StabloPos right;
-}BinStabloCvor;
-
-int InputString(char *file);
-int ReadFromFiles(char *file, Position head);
-int InsertToListAndTreeSorted(Position head, char *drzava, char *gradovi);
-Position createListEl(char *drzava);
-int InsertAfter(Position head, Position newEl);
-StabloPos InsertGradoviToTree(char *gradoviFile, StabloPos root);
-StabloPos Insert(StabloPos root, char *grad, int brojSt);
-StabloPos createNewCvor(char *grad, int brojSt);
-int PrintAll(Position head);
-int InOrder(StabloPos root);
-Position FindByCountryName(char *drzava, Position head);
-int PrintGradovi(StabloPos root, int minBrStan);
+#include "zdk10_a.h"
 
 int main() {
 	char file[MAX] = { 0 }, Input[MAX]= { 0 }, drzava[MAX]= { 0 };
 	VezanaListaEl Head = { .drzava = "",.next = NULL,.root = NULL };
+	Position head = &Head;
 	Position current = NULL;
 	int minBrStanovnika;
 	
 	printf("Unesite ime datoteke:");
 	InputString(file);
-	ReadFromFiles(file, &Head);
-	PrintAll(&Head);
+	ReadFromFiles(file, head);
+	PrintAll(head);
 
 	do {
 		printf("Upisite drzavu koju zelite pretrazit:\n");
@@ -58,7 +24,7 @@ int main() {
 			printf("Unesite donju granicu broja stanovnika gradova:\n");
 			scanf("%d", &minBrStanovnika); getchar();
 			printf("Gradovi sa %d ili vise stanovnika:\n", minBrStanovnika);
-			PrintGradovi(current->root, minBrStanovnika);
+			PrintGradoviSaMinBrSt(current->root, minBrStanovnika);
 		}else{
 			printf("Drzava %s nepostoji!\n", drzava);
 		}
@@ -66,6 +32,7 @@ int main() {
 		InputString(Input);
 
 	} while (strcmp(Input, "exit") != 0);
+
 	return 0;
 }
 
@@ -157,6 +124,7 @@ StabloPos InsertGradoviToTree(char *gradoviFile, StabloPos root)
 
 StabloPos Insert(StabloPos root, char *grad, int brojSt)
 {
+	/* prvo uspoređuje po br Stanovnika, ako je br isti, usporeduje po nazivu grada*/
 	StabloPos node = root;
 	if (node == NULL) {
 		StabloPos temp = NULL;
@@ -235,14 +203,22 @@ Position FindByCountryName(char *drzava, Position head)
 	return NULL;
 }
 
-int PrintGradovi(StabloPos root, int minBrStan)
+int PrintGradoviSaMinBrSt(StabloPos root, int minBrStan)
 {
 	StabloPos temp = root;
 	if (temp != NULL) {
-		PrintGradovi(temp->left, minBrStan);
+		PrintGradoviSaMinBrSt(temp->left, minBrStan);
 		if (temp->brojStanovnika >= minBrStan) 
 			printf(" %-20.20s %d\n", temp->grad, temp->brojStanovnika);
-		PrintGradovi(temp->right, minBrStan);
+		PrintGradoviSaMinBrSt(temp->right, minBrStan);
+	}
+	return 0;
+}
+
+int DealocateList(Position current)
+{
+	while(current->next != NULL){
+		DealocateCvor(current->next);
 	}
 	return 0;
 }

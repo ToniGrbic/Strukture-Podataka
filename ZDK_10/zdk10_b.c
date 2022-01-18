@@ -4,41 +4,7 @@
 #include "stdio.h"
 #include "stdlib.h"
 #include "string.h"
-
-struct _VezanaListaEl;
-struct _BinStabloCvor;
-typedef struct _VezanaListaEl *Position;
-typedef struct _BinStabloCvor *StabloPos;
-
-typedef struct _VezanaListaEl
-{
-	char grad[MAX_SIZE];
-	int brojStanovnika;
-	Position next;
-
-}VezanaListaEl;
-
-typedef struct _BinStabloCvor
-{
-	char drzava[MAX_SIZE];
-	StabloPos left;
-	StabloPos right;
-	Position head;
-}BinStabloCvor;
-
-int InputString(char *file);
-StabloPos ReadFromFiles(char *file, StabloPos root);
-int InsertToListSorted(Position current, Position newEl, int brStan, char *grad);
-Position createListEl(char *grad, int brojStanovnika);
-int InsertAfter(Position head, Position newEl);
-int InsertGradoviToList(char *gradoviFile, Position head);
-StabloPos Insert(StabloPos root, char *drzava, char *gradoviFile);
-StabloPos createNewCvor(char *drzava, char *gradoviFile);
-int PrintAll(StabloPos root);
-int InOrder(StabloPos root);
-StabloPos FindByCountryName(char *drzava, StabloPos root);
-int PrintGradovi(Position head);
-int PrintGradoviSaMinStan(Position head, int minBrStan);
+#include "zdk10_b.h"
 
 int main() {
 	char file[MAX] = { 0 }, Input[MAX]= { 0 }, drzava[MAX]= { 0 };
@@ -166,7 +132,7 @@ int InsertGradoviToList(char *gradoviFile, Position head)
 int InsertToListSorted(Position current, Position newEl, int brStan, char *grad) {
 	while (current->next != NULL && 
 	(current->next->brojStanovnika > brStan || 
-	(current->next->brojStanovnika == brStan  && strcmp(current->next->grad, grad))))
+	(current->next->brojStanovnika == brStan  && strcmp(current->next->grad, grad)>0)))
 		current = current->next;
 	InsertAfter(current, newEl);
 	return 0;
@@ -275,3 +241,4 @@ int PrintGradoviSaMinStan(Position head, int minBrStan)
 	}
 	return 0;
 }
+
