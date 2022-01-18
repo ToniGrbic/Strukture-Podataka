@@ -32,7 +32,7 @@ int main() {
 		InputString(Input);
 
 	} while (strcmp(Input, "exit") != 0);
-
+	DealocateList(head);
 	return 0;
 }
 
@@ -217,8 +217,37 @@ int PrintGradoviSaMinBrSt(StabloPos root, int minBrStan)
 
 int DealocateList(Position current)
 {
-	while(current->next != NULL){
-		DealocateCvor(current->next);
+	while (current->next != NULL) {
+		DealocateCvor(current);
 	}
 	return 0;
 }
+
+int DealocateCvor(Position current) {
+	Position temp = NULL;
+	temp = current->next;
+	DealocateTree(temp->root);
+	current->next = temp->next;
+	free(temp);
+	return 0;
+}
+
+StabloPos DealocateTree(StabloPos node)
+{
+	if (!node) {
+		return NULL;
+	}
+	node->left = DealocateTree(node->left);
+	node->right = DealocateTree(node->right);
+	FreeTreeCvor(node);
+	return NULL;
+}
+
+int FreeTreeCvor(StabloPos node) {
+	if (!node) {
+		return 0;
+	}
+	free(node);
+	return 0;
+}
+
