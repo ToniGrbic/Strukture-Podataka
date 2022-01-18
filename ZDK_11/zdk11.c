@@ -1,87 +1,7 @@
-#define _CRT_SECURE_NO_WARNINGS
-#define MAX (256)
-#define MAX_SIZE (40)
-#define VEL_TAB (11)
 #include "stdio.h"
 #include "stdlib.h"
 #include "string.h"
-
-struct _VezanaListaEl;
-struct _BinStabloCvor;
-struct _hashTab;
-typedef struct _VezanaListaEl *Position;
-typedef struct _VezanaListaEl *Lista;
-typedef struct _BinStabloCvor *StabloPos;
-typedef struct _hashTab *hashT;
-
-typedef struct _VezanaListaEl
-{
-	char drzava[MAX_SIZE];
-	Position next;
-	StabloPos root;
-}VezanaListaEl;
-
-typedef struct _BinStabloCvor
-{
-	int brojStanovnika;
-	char grad[MAX_SIZE];
-	StabloPos left;
-	StabloPos right;
-}BinStabloCvor;
-
-typedef struct _hashTab
-{
-	int velTab;
-	Lista *hashLista;
-}hashTab;
-
-int InputString(char *file);
-int ReadFromFiles(char *file, hashT H);
-hashT InicializeHashTab(int velTab);
-int HashFunction(char *drzava, int velTab);
-int InsertToHashListAndTreeSorted(hashT H, char *drzava, char *gradovi);
-Position FindListPos(char *drzava, hashT H);
-Position createListEl(char *drzava);
-int InsertAfter(Position head, Position newEl);
-StabloPos InsertGradoviToTree(char *gradoviFile, StabloPos root);
-StabloPos Insert(StabloPos root, char *grad, int brojSt);
-StabloPos createNewCvor(char *grad, int brojSt);
-int PrintAll(hashT H);
-int InOrder(StabloPos root);
-Position FindByCountryName(char *drzava, hashT H);
-int PrintGradovi(StabloPos root, int minBrStan);
-
-int main() {
-	char file[MAX] = { 0 }, Input[MAX] = { 0 }, drzava[MAX] = { 0 };
-	int velTab = VEL_TAB, minBrStanovnika=0;
-	hashT H = NULL;
-	Position current = NULL;
-	H = InicializeHashTab(velTab);
-	printf("Unesite ime datoteke:");
-	InputString(file);
-	ReadFromFiles(file, H);
-	PrintAll(H);
-
-	do {
-		printf("Upisite drzavu koju zelite pretrazit:\n");
-		InputString(drzava);
-		current = FindByCountryName(drzava, H);
-		if (current != NULL) {
-			printf("Drzava %s postoji!\n", current->drzava);
-			printf("Unesite donju granicu broja stanovnika gradova:\n");
-			scanf("%d", &minBrStanovnika); getchar();
-			printf("Gradovi sa %d ili vise stanovnika:\n", minBrStanovnika);
-			PrintGradovi(current->root, minBrStanovnika);
-		}else{
-			printf("Drzava %s nepostoji!\n", drzava);
-		}
-		printf("za nastavak unesite neku tipku, a za izlaz exit\n");
-		InputString(Input);
-
-	} while (strcmp(Input, "exit") != 0);
-	
-	return 0;
-}
+#include "zdk11.h"
 
 int InputString(char *str)
 {
@@ -109,7 +29,6 @@ int ReadFromFiles(char *file, hashT H)
 		result = sscanf(buffer, "%s %s", drzava, gradoviFile);
 		if (result == 2)
 			InsertToHashListAndTreeSorted(H, drzava, gradoviFile);
-
 	}
 	fclose(fp);
 	return 0;
@@ -132,16 +51,16 @@ hashT InicializeHashTab(int velTab)
 	for (int i = 0; i < velTab; i++) {
 		H->hashLista[i] = NULL;
 	}
-		
 	return H;
 }
 
 int HashFunction(char *drzava, int velTab)
 {
+	
 	int result = 0;
 	for (int i = 0; i < 5; i++){
 		if(drzava[i] == '\0')
-			break;
+			break;	/*ako drzava ima manje od 5 slova izlazimo iz petlje*/
 		result += drzava[i];
 	}
 		
@@ -151,7 +70,7 @@ int HashFunction(char *drzava, int velTab)
 int InsertToHashListAndTreeSorted(hashT H, char *drzava, char *gradoviFile)
 {
 	Position newEl = NULL;
-	Position current = NULL;
+	Lista L = NULL;
 	int hashKey = HashFunction(drzava, H->velTab);
 
 	newEl = createListEl(drzava);
@@ -159,14 +78,14 @@ int InsertToHashListAndTreeSorted(hashT H, char *drzava, char *gradoviFile)
 		return -1;
 	newEl->root = InsertGradoviToTree(gradoviFile, newEl->root);
 
+	/* ako je 1. pozicija liste prazna stavi tu novi El, ako nije unesi sortirano u tu listu*/
 	if(!H->hashLista[hashKey])
 		H->hashLista[hashKey] = newEl;
 	else {
-		current = H->hashLista[hashKey];
-		while (current->next != NULL && strcmp(current->next->drzava, drzava) < 0)
-			current = current->next;
-		newEl->next = current->next;
-		current->next = newEl;
+		L = H->hashLista[hashKey];
+		while (L->next != NULL && strcmp(L->next->drzava, drzava) < 0)
+			L = L->next;
+		InsertAfter(L, newEl);
 	}
 	return 0;
 }
@@ -213,6 +132,7 @@ StabloPos InsertGradoviToTree(char *gradoviFile, StabloPos root)
 
 StabloPos Insert(StabloPos root, char *grad, int brojSt)
 {
+	/* prvo uspoređuje po br Stanovnika, ako je br isti, usporeduje po nazivu grada*/
 	StabloPos node = root;
 	if (node == NULL) {
 		StabloPos temp = NULL;
@@ -231,7 +151,7 @@ StabloPos Insert(StabloPos root, char *grad, int brojSt)
 	else if(strcmp(node->grad, grad) > 0){
 		node->right = Insert(node->right, grad, brojSt);
 	}else{
-		printf("Vec imamo isti grad: %s", grad);
+		printf("Vec imamo isti grad: %s\n", node->grad);
 	}
 	return root;
 }
@@ -306,3 +226,57 @@ int PrintGradovi(StabloPos root, int minBrStan)
 	}
 	return 0;
 }
+
+int DealocateHashTab(hashT H)
+{
+	Lista L = NULL;
+	for(int i=0;i<H->velTab; i++)
+	{
+		L = H->hashLista[i];
+		if (L != NULL) {
+			DealocateList(L);
+		}
+	}
+	return 0;
+}
+
+int DealocateList(Lista L)
+{
+	while(L->next != NULL){
+		DealocateCvor(L);
+	}
+	return 0;
+}
+
+int DealocateCvor(Lista L){
+	Position temp = NULL;
+
+	DealocateTree(L->root);
+    temp = L->next;
+    L->next = temp->next;
+    free(temp);
+	return 0;
+}
+
+StabloPos DealocateTree(StabloPos node)
+{
+	if (!node){
+        return NULL;
+    }
+    node->left = DealocateTree(node->left);
+    node->right = DealocateTree(node->right);
+    FreeTreeCvor(node);
+	return NULL;
+}
+
+int FreeTreeCvor(StabloPos node){
+	if (!node){
+        return 0;
+    }
+    if (node->grad){
+        free(node->grad);
+    }
+    free(node);
+	return 0;
+}
+ 

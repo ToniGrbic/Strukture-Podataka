@@ -1,0 +1,5 @@
+Sarajevo    275000
+Travnik     35000
+Mostar      105000
+BanjaLuka   175000
+Livno       35000
