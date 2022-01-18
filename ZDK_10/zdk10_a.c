@@ -107,6 +107,7 @@ StabloPos InsertGradoviToTree(char *gradoviFile, StabloPos root)
 {
 	char buffer[MAX], grad[MAX];
 	int brojSt;
+	int result = 0;
 	FILE *fp = NULL;
 	fp = fopen(gradoviFile, "r");
 	if (fp == NULL) {
@@ -115,7 +116,8 @@ StabloPos InsertGradoviToTree(char *gradoviFile, StabloPos root)
 	}
 	while (fgets(buffer, MAX, fp) != NULL)
 	{
-		sscanf(buffer, "%s %d", grad, &brojSt);
+		result = sscanf(buffer, "%s %d", grad, &brojSt);
+		if(result == 2)
 		root = Insert(root, grad, brojSt);
 	}
 	fclose(fp);
