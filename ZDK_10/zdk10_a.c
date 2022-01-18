@@ -1,11 +1,11 @@
+#include "zdk10_a.h"
 #include "stdio.h"
 #include "stdlib.h"
 #include "string.h"
-#include "zdk10_a.h"
 
 int main() {
 	char file[MAX] = { 0 }, Input[MAX]= { 0 }, drzava[MAX]= { 0 };
-	VezanaListaEl Head = { .drzava = "",.next = NULL,.root = NULL };
+	VezanaListaEl Head = { .drzava = "", .next = NULL, .root = NULL };
 	Position head = &Head;
 	Position current = NULL;
 	int minBrStanovnika;
@@ -214,6 +214,7 @@ int PrintGradoviSaMinBrSt(StabloPos root, int minBrStan)
 	}
 	return 0;
 }
+
 
 int DealocateList(Position current)
 {

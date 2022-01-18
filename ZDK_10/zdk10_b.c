@@ -1,7 +1,7 @@
+#include "zdk10_b.h"
 #include "stdio.h"
 #include "stdlib.h"
 #include "string.h"
-#include "zdk10_b.h"
 
 int main() {
 	char file[MAX] = { 0 }, Input[MAX]= { 0 }, drzava[MAX]= { 0 };
