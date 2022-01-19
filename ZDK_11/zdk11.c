@@ -211,9 +211,6 @@ Position FindByCountryName(char *drzava, hashT H)
 		}
 		L = L->next;
 	}
-	if (L == NULL) {
-		printf("drzava %s nepostoji\n", drzava);
-	}
 	return NULL;
 }
 
@@ -239,6 +236,8 @@ int DealocateHashTab(hashT H)
 			DealocateList(L);
 		}
 	}
+	free(H->hashLista);
+	free(H);
 	return 0;
 }
 
